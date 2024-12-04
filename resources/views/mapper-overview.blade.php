@@ -11,11 +11,13 @@
     @endif
 
     <section>
+        <!-- Show $response in div -->
         <div>
-            <h1>This is the index page</h1>
-            <p>Index page works</p>
-            <!-- Button that says: "Update consumer" -->
-            <a href="{{ route('update') }}" class="button">Update consumer</a>
+            @if (isset($response['error']))
+                <p>{{ $response['error'] }}</p>
+            @else
+                {{ var_export($response, true) }}
+            @endif
         </div>
     </section>
 @endsection
