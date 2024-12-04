@@ -11,13 +11,16 @@
     @endif
 
     <section>
-        <!-- Show $response in div -->
         <div>
-            @if (isset($response['error']))
-                <p>{{ $response['error'] }}</p>
+            @if (isset($responseData['error']))
+                <p>{{ $responseData['error'] }}</p>
             @else
-                {{ var_export($response, true) }}
+                <x-mapper :columns="$responseData['columns']" :rows="$responseData['rows']" />
             @endif
         </div>
     </section>
+
+    
+
+
 @endsection
