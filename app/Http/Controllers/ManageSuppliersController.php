@@ -7,121 +7,68 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Config;
 
 class ManageSuppliersController extends Controller
 {
-    // private string $baseUrl;
+    private string $baseUrl;
 
     public function __construct()
     {
-        // $this->baseUrl = config('mcsd_fastapi_app_url') . '/suppliers';
+        $this->baseUrl = Config::get('app.mcsd_fastapi_app_url') . '/supplier';
     }
 
     public function __invoke(): View
     {
-        // $response = Http::get($this->baseUrl);
-        // $suppliers = $response->json();
-
-        // Mock suppliers with random json
-        $suppliers = [
-            [
-                'URA number' => 1,
-                'Care provider name' => 'Supplier 1',
-                'Endpoint' => 'http://supplier1.com',
-                'created_at' => '2021-09-01 12:00:00',
-            ],
-            [
-                'URA number' => 2,
-                'Care provider name' => 'Supplier 2',
-                'Endpoint' => 'http://supplier2.com',
-                'created_at' => '2021-09-02 12:00:00',
-            ],
-            [
-                'URA number' => 3,
-                'Care provider name' => 'Supplier 3',
-                'Endpoint' => 'http://supplier3.com',
-                'created_at' => '2021-09-03 12:00:00',
-            ]
-        ];
-
+        $response = Http::get($this->baseUrl);
+        $suppliers = $response->json();
 
         return view('suppliers.index', compact('suppliers'));
     }
 
-    // Display a listing of the suppliers
-    // public function index()
-    // {
-    //     $response = Http::get($this->baseUrl);
-    //     $suppliers = $response->json();
-    //     return view('suppliers.index', compact('suppliers'));
-    // }
-
-    // Show the form for creating a new supplier
     public function create(): View
     {
         return view('suppliers.create');
     }
 
-    // Store a newly created supplier in storage
     public function store(Request $request): RedirectResponse
     {
         # TODO Create a supplier validator model
 
-        // Http::post($this->baseUrl, $request->all());
+        Http::post($this->baseUrl, $request->all());
 
         return redirect()->route('suppliers.index')->with('success', 'Supplier created successfully.');
     }
 
-    // Display the specified supplier
     public function show(string $id): View
     {
-        // $response = Http::get("{$this->baseUrl}/{$id}");
-        // $supplier = $response->json();
-
-        // Mock suppliers with random json
-        $supplier =
-            [
-                'URA number' => 1,
-                'Care provider name' => 'Supplier 1',
-                'Endpoint' => 'http://supplier1.com',
-                'created_at' => '2021-09-01 12:00:00',
-            ];
+        $response = Http::get("{$this->baseUrl}/{$id}");
+        $supplier = $response->json();
 
         return view('suppliers.show', compact('supplier'));
     }
 
-    // Show the form for editing the specified supplier
     public function edit(string $id): View
     {
-        // $response = Http::get("{$this->baseUrl}/{$id}");
-        // $supplier = $response->json();
-
-        // Mock suppliers with random json
-        $supplier =
-            [
-                'URA number' => 1,
-                'Care provider name' => 'Supplier 1',
-                'Endpoint' => 'http://supplier1.com',
-                'created_at' => '2021-09-01 12:00:00',
-            ];
+        $response = Http::get("{$this->baseUrl}/{$id}");
+        $supplier = $response->json();
 
         return view('suppliers.edit', compact('supplier'));
     }
 
-    // Update the specified supplier in storage
     public function update(Request $request, string $id): RedirectResponse
     {
         # TODO Create a supplier validator model
 
-        // Http::put("{$this->baseUrl}/{$id}", $request->all());
+        Http::put("{$this->baseUrl}/{$id}", $request->all());
 
         return redirect()->route('suppliers.index')->with('success', 'Supplier updated successfully.');
     }
 
-    // Remove the specified supplier from storage
     public function destroy(string $id): RedirectResponse
     {
-        // Http::delete("{$this->baseUrl}/{$id}");
+        Http::delete("{$this->baseUrl}/{$id}");
 
         return redirect()->route('suppliers.index')->with('success', 'Supplier deleted successfully.');
     }

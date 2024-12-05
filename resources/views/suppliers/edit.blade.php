@@ -4,15 +4,15 @@
     <section>
         <div>
             <h1>Edit Supplier</h1>
-            <form action="{{ route('suppliers.update', $supplier['URA number']) }}" method="POST">
+            <form action="{{ route('suppliers.update', $supplier['id']) }}" method="POST">
                 @csrf
                 @method('PUT')
-                <label for="ura_number">URA Number:</label>
-                <input type="text" id="ura_number" name="ura_number" value="{{ $supplier['URA number'] }}" required>
-                <label for="care_provider_name">Care Provider Name:</label>
-                <input type="text" id="care_provider_name" name="care_provider_name" value="{{ $supplier['Care provider name'] }}" required>
-                <label for="endpoint">Endpoint:</label>
-                <input type="text" id="endpoint" name="endpoint" value="{{ $supplier['Endpoint'] }}" required>
+                <label for="id">ID:</label>
+                <input type="text" id="id" name="id" value="{{ $supplier['id'] }}" required>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ $supplier['name'] }}" required>
+                <label for="endpoint">Endpoint url:</label>
+                <input type="text" id="endpoint" name="endpoint" value="{{ $supplier['endpoint'] }}" required>
                 <button type="submit" class="button">Update</button>
             </form>
         </div>
