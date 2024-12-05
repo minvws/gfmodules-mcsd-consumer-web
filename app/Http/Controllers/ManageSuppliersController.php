@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class ManageSuppliersController extends Controller
 {
-    private $baseUrl;
+    // private string $baseUrl;
 
     public function __construct()
     {
-        $this->baseUrl = config('mcsd_fastapi_app_url') . '/suppliers';
+        // $this->baseUrl = config('mcsd_fastapi_app_url') . '/suppliers';
     }
 
     public function __invoke(): View
     {
         // $response = Http::get($this->baseUrl);
         // $suppliers = $response->json();
-        
+
         // Mock suppliers with random json
         $suppliers = [
             [
@@ -44,7 +44,7 @@ class ManageSuppliersController extends Controller
             ]
         ];
 
-                
+
         return view('suppliers.index', compact('suppliers'));
     }
 
@@ -57,13 +57,13 @@ class ManageSuppliersController extends Controller
     // }
 
     // Show the form for creating a new supplier
-    public function create()
+    public function create(): View
     {
         return view('suppliers.create');
     }
 
     // Store a newly created supplier in storage
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         # TODO Create a supplier validator model
 
@@ -73,13 +73,13 @@ class ManageSuppliersController extends Controller
     }
 
     // Display the specified supplier
-    public function show($id)
+    public function show(string $id): View
     {
         // $response = Http::get("{$this->baseUrl}/{$id}");
         // $supplier = $response->json();
 
         // Mock suppliers with random json
-        $supplier = 
+        $supplier =
             [
                 'URA number' => 1,
                 'Care provider name' => 'Supplier 1',
@@ -91,13 +91,13 @@ class ManageSuppliersController extends Controller
     }
 
     // Show the form for editing the specified supplier
-    public function edit($id)
+    public function edit(string $id): View
     {
         // $response = Http::get("{$this->baseUrl}/{$id}");
         // $supplier = $response->json();
 
         // Mock suppliers with random json
-        $supplier = 
+        $supplier =
             [
                 'URA number' => 1,
                 'Care provider name' => 'Supplier 1',
@@ -109,7 +109,7 @@ class ManageSuppliersController extends Controller
     }
 
     // Update the specified supplier in storage
-    public function update(Request $request, $id)
+    public function update(Request $request, string $id): RedirectResponse
     {
         # TODO Create a supplier validator model
 
@@ -119,7 +119,7 @@ class ManageSuppliersController extends Controller
     }
 
     // Remove the specified supplier from storage
-    public function destroy($id)
+    public function destroy(string $id): RedirectResponse
     {
         // Http::delete("{$this->baseUrl}/{$id}");
 

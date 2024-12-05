@@ -26,11 +26,9 @@ Route::get('/suppliers', ManageSuppliersController::class)->name('suppliers.inde
 Route::get('/suppliers/create', [ManageSuppliersController::class, 'create'])->name('suppliers.create');
 Route::post('/suppliers', [ManageSuppliersController::class, 'store'])->name('suppliers.store');
 
-define('SUPPLIER_ID_ROUTE', '/suppliers/{id}');
+Route::get('/suppliers/{id}', [ManageSuppliersController::class, 'show'])->name('suppliers.show');
 
-Route::get(SUPPLIER_ID_ROUTE, [ManageSuppliersController::class, 'show'])->name('suppliers.show');
+Route::get('/suppliers/{id}' . '/edit', [ManageSuppliersController::class, 'edit'])->name('suppliers.edit');
+Route::put('/suppliers/{id}', [ManageSuppliersController::class, 'update'])->name('suppliers.update');
 
-Route::get(SUPPLIER_ID_ROUTE . '/edit', [ManageSuppliersController::class, 'edit'])->name('suppliers.edit');
-Route::put(SUPPLIER_ID_ROUTE, [ManageSuppliersController::class, 'update'])->name('suppliers.update');
-
-Route::get(SUPPLIER_ID_ROUTE . "/delete", [ManageSuppliersController::class, 'destroy'])->name('suppliers.destroy');
+Route::get('/suppliers/{id}' . "/delete", [ManageSuppliersController::class, 'destroy'])->name('suppliers.destroy');
