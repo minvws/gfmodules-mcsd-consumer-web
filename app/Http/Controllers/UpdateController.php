@@ -22,8 +22,6 @@ class UpdateController extends Controller
         // }
 
         $responseData = [
-            'nrOfRows' => 6,
-            'nrOfColumns' => 7,
             'columns' => ['supplier_id', 'resource_type', 'supplier_resource_id', 'supplier_resource_version',
                 'consumer_resource_id', 'consumer_resource_version', 'last_update'],
             'rows' => [
