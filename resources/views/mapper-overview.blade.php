@@ -12,10 +12,15 @@
 
     <section>
         <div>
-            <h1>This is the index page</h1>
-            <p>Index page works</p>
-            <!-- Button that says: "Update consumer" -->
-            <a href="{{ route('update') }}" class="button">Update consumer</a>
+            @if (isset($responseData['error']))
+                <p>{{ $responseData['error'] }}</p>
+            @else
+                <x-mapper :columns="$responseData['columns']" :rows="$responseData['rows']" />
+            @endif
         </div>
     </section>
+
+    
+
+
 @endsection

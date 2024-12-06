@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Facade;
 
 return [
+    'mcsd_fastapi_app_url' => env('MCSD_FASTAPI_APP_URL', 'http://localhost'),
 
     /*
     |--------------------------------------------------------------------------
