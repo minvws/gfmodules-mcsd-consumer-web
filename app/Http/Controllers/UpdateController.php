@@ -10,7 +10,7 @@ class UpdateController extends Controller
 {
     public function __invoke(): View
     {
-        $mcsdFastapiAppUrl = config('mcsd_fastapi_app_url');
+        // $mcsdFastapiAppUrl = config('mcsd_fastapi_app_url');
 
         // try {
         //     // Call FastAPI app with a timeout

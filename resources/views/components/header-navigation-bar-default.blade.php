@@ -7,14 +7,14 @@
     <div class="collapsing-element">
         <ul>
             <li>
-                <a href="{{ route('index') }}" @if(\Illuminate\Support\Facades\Route::currentRouteName() === 'landing.home') aria-current="page" @endif><span class="icon icon-home">Home-icoon</span>@lang('Landing')</a>
-                <a href="{{ route('index') }}" @if(\Illuminate\Support\Facades\Route::currentRouteName() === 'timeline.home') aria-current="page" @endif><span class="icon icon-home">Home-icoon</span>@lang('Timeline')</a>
+                <a href="{{ route('index') }}"  aria-current="page" ><span class="icon icon-home">Home-icoon</span>@lang('Landing')</a>
+                <a href="{{ route('suppliers.index') }}"  aria-current="page" ><span class="icon icon-home">Home-icoon</span>@lang('Suppliers')</a>
             </li>
         </ul>
     </div>
 </nav>
 
-@if(!request()->routeIs('home'))
+<!-- @if(!request()->routeIs('home'))
 <nav class="breadcrumb-bar">
     <div>
         <ul>
@@ -22,4 +22,4 @@
         </ul>
     </div>
 </nav>
-@endif
+@endif -->

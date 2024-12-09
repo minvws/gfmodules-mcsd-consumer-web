@@ -14,8 +14,7 @@
         <div>
             <h1>This is the index page</h1>
             <p>Index page works</p>
-            <!-- Button that says: "Update consumer" -->
-            <a href="{{ route('update') }}" class="button">Update consumer</a>
+            <a href="{{ route('consumer.update') }}" class="button">Update consumer</a>
         </div>
     </section>
 @endsection
