@@ -49,7 +49,6 @@ class UpdateController extends Controller
                 ['row6col1', 'row6col2', 'row6col3', 'row6col4', 'row6col5', 'row6col6', 'row6col7'],
             ],
         ];
-        // dd($responseData);
 
         return view('mapper-overview', ['responseData' => $responseData]);
     }
