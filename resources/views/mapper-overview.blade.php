@@ -1,21 +1,14 @@
 @extends('layouts.guest')
-
 @section('content')
-    <section>
-        <div>
-            @if (isset($responseData['error']))
-            <div class="error" aria-label="{{__('Error') }}">
-                <ul>
-                    <li>{{ $responseData['error'] }}</li>
-                </ul>
-            </div>
-            @else
-                <x-mapper :columns="$responseData['columns']" :rows="$responseData['rows']" />
-            @endif
-        </div>
-    </section>
-
-    
-
-
+@if (isset($responseData['error']))
+<section>
+<div class="error" aria-label="{{__('Error') }}">
+    <ul>
+        <li>{{ $responseData['error'] }}</li>
+    </ul>
+</div>
+</section>
+@else
+<x-mapper :headers="$responseData['headers']" :rows="$responseData['rows']" />
+@endif
 @endsection
