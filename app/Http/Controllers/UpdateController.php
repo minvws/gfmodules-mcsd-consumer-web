@@ -5,21 +5,37 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\ConnectionException;
 
 class UpdateController extends Controller
 {
+    private string $baseUrl;
+
+    public function __construct()
+    {
+        $this->baseUrl = Config::get('app.mcsd_fastapi_app_url') . '/update-consumer';
+    }
+
     public function __invoke(): View
     {
-        // $mcsdFastapiAppUrl = config('mcsd_fastapi_app_url');
-
-        // try {
-        //     // Call FastAPI app with a timeout
-        //     $response = Http::timeout(2)->get($mcsdFastapiAppUrl . '/update-consumer');
-        //     $responseData = $response->json();
-        // } catch (ConnectionException $e) {
-        //     // Handle timeout exception
-        //     $responseData = ['error' => 'Request timed out. Please try again later.'];
-        // }
+        try {
+            // Call FastAPI app with a timeout
+            $response = Http::get($this->baseUrl);
+            $responseData = $response->json();
+            if ($response->status() === 200) {
+                $responseData[] = $response->json();
+            } else {
+                $responseData = [
+                    'error' => 'Error occured: ' . $response->status() . ' ' . $response->body()
+                ];
+            }
+        } catch (ConnectionException $e) {
+            $responseData = [
+                'error' => 'Connection error: ' . $e->getMessage()
+            ];
+        }
 
         $responseData = [
             'columns' => ['supplier_id', 'resource_type', 'supplier_resource_id', 'supplier_resource_version',
@@ -33,6 +49,7 @@ class UpdateController extends Controller
                 ['row6col1', 'row6col2', 'row6col3', 'row6col4', 'row6col5', 'row6col6', 'row6col7'],
             ],
         ];
+        // dd($responseData);
 
         return view('mapper-overview', ['responseData' => $responseData]);
     }

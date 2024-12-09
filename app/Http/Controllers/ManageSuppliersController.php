@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
+use App\Http\Requests\SupplierStoreRequest;
+use App\Http\Requests\SupplierUpdateRequest;
+use Illuminate\Validation\ValidationException;
 
 class ManageSuppliersController extends Controller
 {
@@ -32,13 +34,14 @@ class ManageSuppliersController extends Controller
         return view('suppliers.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(SupplierStoreRequest $request): RedirectResponse
     {
-        # TODO Create a supplier validator model
-
-        Http::post($this->baseUrl, $request->all());
-
-        return redirect()->route('suppliers.index')->with('success', 'Supplier created successfully.');
+        try {
+            Http::post($this->baseUrl, $request->validated());
+            return redirect()->route('suppliers.index')->with('success', 'Supplier created successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        }
     }
 
     public function show(string $id): View
@@ -57,13 +60,14 @@ class ManageSuppliersController extends Controller
         return view('suppliers.edit', compact('supplier'));
     }
 
-    public function update(Request $request, string $id): RedirectResponse
+    public function update(SupplierUpdateRequest $request, string $id): RedirectResponse
     {
-        # TODO Create a supplier validator model
-
-        Http::put("{$this->baseUrl}/{$id}", $request->all());
-
-        return redirect()->route('suppliers.index')->with('success', 'Supplier updated successfully.');
+        try {
+            Http::put("{$this->baseUrl}/{$id}", $request->validated());
+            return redirect()->route('suppliers.index')->with('success', 'Supplier updated successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        }
     }
 
     public function destroy(string $id): RedirectResponse

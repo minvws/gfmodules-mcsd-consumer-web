@@ -1,14 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    @if (session()->has('error'))
-        <section role="alert" class="error no-print" aria-label="{{ __('error') }}">
-            <div>
-                <h4>{{ session('error') }}</h4>
-                <p>{{ session('error_description') }}</p>
-            </div>
-        </section>
-    @endif
     <section>
         <div>
         <h1>Suppliers</h1>
