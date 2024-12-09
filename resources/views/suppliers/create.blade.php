@@ -1,8 +1,10 @@
 @extends('layouts.app')
-
 @section('content')
     <section>
         <div>
+            @if ($errors->any())
+                <x-validation-errors class="custom-error-class" />
+            @endif
             <h1>Create Supplier</h1>
             <form action="{{ route('suppliers.store') }}" method="POST">
                 @csrf
