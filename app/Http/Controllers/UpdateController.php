@@ -22,16 +22,34 @@ class UpdateController extends Controller
     public function update(Request $request): View
     {
         $id = $request->input('id');
-        return $this->updateConsumer($id);
+        $resourceType = $request->input('resourceType');
+
+        if (($resourceType !== null) && ($id === null)) {
+            $responseData = [
+                'error' => 'Error occured: You must set ID when you want to use Resource Type'
+            ];
+            return view('mapper-overview', ['responseData' => $responseData]);
+        }
+
+        return $this->updateConsumer($id, $resourceType);
     }
 
-    public function updateConsumer(string $id): View
+    public function updateConsumer(?string $id = null, ?string $resourceType = null): View
     {
-
         # DO UPDATE
         try {
-            // Call FastAPI app with a timeout
-            $response = Http::post($this->baseUrl . '/supplier/' . $id . '/update_resources');
+            if (is_null($id) && is_null($resourceType)) {
+                $response = Http::post($this->baseUrl . '/update_resources');
+            } elseif (!is_null($id) && is_null($resourceType)) {
+                $response = Http::post($this->baseUrl . '/update_resources/' . $id);
+            } elseif (!is_null($id) && !is_null($resourceType)) {
+                $response = Http::post($this->baseUrl . '/update_resources/' . $id . '/' . $resourceType);
+            } else {
+                $responseData = [
+                    'error' => 'Invalid parameters'
+                ];
+                return view('mapper-overview', ['responseData' => $responseData]);
+            }
             $responseData = $response->json();
             if ($response->status() !== 200) {
                 $responseData = [
@@ -49,9 +67,23 @@ class UpdateController extends Controller
         # RETURN VIEW
         try {
             // Call FastAPI app with a timeout
-            $response = Http::get($this->baseUrl . '/resource_map', [
-                'supplier_id' => $id
-            ]);
+            if (is_null($id) && is_null($resourceType)) {
+                $response = Http::get($this->baseUrl . '/resource_map');
+            } elseif (!is_null($id) && is_null($resourceType)) {
+                $response = Http::get($this->baseUrl . '/resource_map', [
+                    'supplier_id' => $id,
+                ]);
+            } elseif (!is_null($id) && !is_null($resourceType)) {
+                $response = Http::get($this->baseUrl . '/resource_map', [
+                    'supplier_id' => $id,
+                    'resource_type' => $resourceType
+                ]);
+            } else {
+                $responseData = [
+                    'error' => 'Invalid parameters'
+                ];
+                return view('mapper-overview', ['responseData' => $responseData]);
+            }
             $responseData = $response->json();
             if ($response->status() === 200) {
                 if (!isset($responseData[0])) {
