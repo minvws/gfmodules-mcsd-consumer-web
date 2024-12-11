@@ -19,7 +19,7 @@ use App\Http\Controllers\ManageSuppliersController;
 */
 
 Route::get('/', IndexController::class)->name('index');
-Route::get('/update', UpdateController::class)->name('consumer.update');
+Route::post('/update', [UpdateController::class, 'update'])->name('consumer.update');
 
 Route::get('/suppliers', ManageSuppliersController::class)->name('suppliers.index');
 

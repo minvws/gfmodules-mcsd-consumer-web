@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Request;
 
 class UpdateController extends Controller
 {
@@ -15,40 +16,102 @@ class UpdateController extends Controller
 
     public function __construct()
     {
-        $this->baseUrl = Config::get('app.mcsd_fastapi_app_url') . '/update-consumer';
+        $this->baseUrl = Config::get('app.mcsd_fastapi_app_url');
     }
 
-    public function __invoke(): View
+    public function update(Request $request): View
     {
+        $id = $request->input('id');
+        $resourceType = $request->input('resourceType');
+
+        if (($resourceType !== null) && ($id === null)) {
+            $responseData = [
+                'error' => 'Error occured: You must set ID when you want to use Resource Type'
+            ];
+            return view('mapper-overview', ['responseData' => $responseData]);
+        }
+
+        return $this->updateConsumer($id, $resourceType);
+    }
+
+    public function updateConsumer(?string $id = null, ?string $resourceType = null): View
+    {
+        # DO UPDATE
         try {
-            // Call FastAPI app with a timeout
-            $response = Http::get($this->baseUrl);
-            $responseData = $response->json();
-            if ($response->status() === 200) {
-                $responseData[] = $response->json();
+            if (is_null($id) && is_null($resourceType)) {
+                $response = Http::post($this->baseUrl . '/update_resources');
+            } elseif (!is_null($id) && is_null($resourceType)) {
+                $response = Http::post($this->baseUrl . '/update_resources/' . $id);
+            } elseif (!is_null($id) && !is_null($resourceType)) {
+                $response = Http::post($this->baseUrl . '/update_resources/' . $id . '/' . $resourceType);
             } else {
+                $responseData = [
+                    'error' => 'Invalid parameters'
+                ];
+                return view('mapper-overview', ['responseData' => $responseData]);
+            }
+            $responseData = $response->json();
+            if ($response->status() !== 200) {
                 $responseData = [
                     'error' => 'Error occured: ' . $response->status() . ' ' . $response->body()
                 ];
+                return view('mapper-overview', ['responseData' => $responseData]);
             }
         } catch (ConnectionException $e) {
             $responseData = [
                 'error' => 'Connection error: ' . $e->getMessage()
             ];
+            return view('mapper-overview', ['responseData' => $responseData]);
         }
 
-        $responseData = [
-            'columns' => ['supplier_id', 'resource_type', 'supplier_resource_id', 'supplier_resource_version',
-                'consumer_resource_id', 'consumer_resource_version', 'last_update'],
-            'rows' => [
-                ['row1col1', 'row1col2', 'row1col3', 'row1col4', 'row1col5', 'row1col6', 'row1col7'],
-                ['row2col1', 'row2col2', 'row2col3', 'row2col4', 'row2col5', 'row2col6', 'row2col7'],
-                ['row3col1', 'row3col2', 'row3col3', 'row3col4', 'row3col5', 'row3col6', 'row3col7'],
-                ['row4col1', 'row4col2', 'row4col3', 'row4col4', 'row4col5', 'row4col6', 'row4col7'],
-                ['row5col1', 'row5col2', 'row5col3', 'row5col4', 'row5col5', 'row5col6', 'row5col7'],
-                ['row6col1', 'row6col2', 'row6col3', 'row6col4', 'row6col5', 'row6col6', 'row6col7'],
-            ],
-        ];
+        # RETURN VIEW
+        try {
+            // Call FastAPI app with a timeout
+            if (is_null($id) && is_null($resourceType)) {
+                $response = Http::get($this->baseUrl . '/resource_map');
+            } elseif (!is_null($id) && is_null($resourceType)) {
+                $response = Http::get($this->baseUrl . '/resource_map', [
+                    'supplier_id' => $id,
+                ]);
+            } elseif (!is_null($id) && !is_null($resourceType)) {
+                $response = Http::get($this->baseUrl . '/resource_map', [
+                    'supplier_id' => $id,
+                    'resource_type' => $resourceType
+                ]);
+            } else {
+                $responseData = [
+                    'error' => 'Invalid parameters'
+                ];
+                return view('mapper-overview', ['responseData' => $responseData]);
+            }
+            $responseData = $response->json();
+            if ($response->status() === 200) {
+                if (!isset($responseData[0])) {
+                    $responseData = [
+                        'error' => 'No data found'
+                    ];
+                    return view('mapper-overview', ['responseData' => $responseData]);
+                }
+                $headers = array_keys($responseData[0]);
+                $rows = array_map(function ($item) {
+                    return array_values($item);
+                }, $responseData);
+                $responseData = [
+                    'headers' => $headers,
+                    'rows' => $rows
+                ];
+            } else {
+                $responseData = [
+                    'error' => 'Error occured: ' . $response->status() . ' ' . $response->body()
+                ];
+                return view('mapper-overview', ['responseData' => $responseData]);
+            }
+        } catch (ConnectionException $e) {
+            $responseData = [
+                'error' => 'Connection error: ' . $e->getMessage()
+            ];
+            return view('mapper-overview', ['responseData' => $responseData]);
+        }
 
         return view('mapper-overview', ['responseData' => $responseData]);
     }

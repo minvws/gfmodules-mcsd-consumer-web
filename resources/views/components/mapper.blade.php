@@ -1,8 +1,8 @@
-<table class="table-auto w-full">
+<table>
     <thead>
         <tr>
-            @foreach ($columns as $column)
-                <th class="px-4 py-2">{{ $column }}</th>
+            @foreach ($headers as $header)
+                <th>{{ $header }}</th>
             @endforeach
         </tr>
     </thead>
