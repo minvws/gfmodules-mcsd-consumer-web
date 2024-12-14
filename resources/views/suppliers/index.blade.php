@@ -25,6 +25,7 @@
                                 <a href="{{ route('suppliers.show', $supplier['id']) }}" class="button">View</a>
                                 <a href="{{ route('suppliers.edit', $supplier['id']) }}" class="button">Edit</a>
                                 <a href="{{ route('suppliers.destroy', $supplier['id']) }}" class="button">Delete</a>
+                                <a href="{{ route('resource.mapper', ['id' => $supplier['id']]) }}" class="button">Show Mapper</a>
                             </div>
                         </td>
                     </tr>

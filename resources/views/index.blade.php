@@ -13,7 +13,7 @@
                 <label for="supplier ID">Supplier ID:</label>
                 <input type="text" id="id" name="id">
             </div>
-            <div>
+            <!-- <div>
                 <label for="resourceType">Resource Type:</label>
                 <select id="resourceType" name="resourceType">
                     <option value=""></option>
@@ -25,6 +25,10 @@
                     <option value="Endpoint">Endpoint</option>
                     <option value="OrganizationAffiliation">OrganizationAffiliation</option>
                 </select>
+            </div> -->
+            <div>
+                <label for="Since">Since:</label>
+                <input type="datetime-local" id="since" name="since">
             </div>
             <div>
                 <button type="submit" class="button">Update consumer</button>

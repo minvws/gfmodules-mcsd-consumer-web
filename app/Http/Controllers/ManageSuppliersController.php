@@ -14,16 +14,16 @@ use Illuminate\Validation\ValidationException;
 
 class ManageSuppliersController extends Controller
 {
-    private string $baseUrl;
+    private string $supplierUrl;
 
     public function __construct()
     {
-        $this->baseUrl = Config::get('app.mcsd_fastapi_app_url') . '/supplier';
+        $this->supplierUrl =  Config::get('app.mcsd_fastapi_app_url') . '/supplier';
     }
 
     public function __invoke(): View
     {
-        $response = Http::get($this->baseUrl);
+        $response = Http::get($this->supplierUrl);
         $suppliers = $response->json();
 
         return view('suppliers.index', compact('suppliers'));
@@ -37,7 +37,7 @@ class ManageSuppliersController extends Controller
     public function store(SupplierStoreRequest $request): RedirectResponse
     {
         try {
-            Http::post($this->baseUrl, $request->validated());
+            Http::post($this->supplierUrl, $request->validated());
             return redirect()->route('suppliers.index')->with('success', 'Supplier created successfully.');
         } catch (ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
@@ -46,7 +46,7 @@ class ManageSuppliersController extends Controller
 
     public function show(string $id): View
     {
-        $response = Http::get("{$this->baseUrl}/{$id}");
+        $response = Http::get("{$this->supplierUrl}/{$id}");
         $supplier = $response->json();
 
         return view('suppliers.show', compact('supplier'));
@@ -54,7 +54,7 @@ class ManageSuppliersController extends Controller
 
     public function edit(string $id): View
     {
-        $response = Http::get("{$this->baseUrl}/{$id}");
+        $response = Http::get("{$this->supplierUrl}/{$id}");
         $supplier = $response->json();
 
         return view('suppliers.edit', compact('supplier'));
@@ -63,7 +63,7 @@ class ManageSuppliersController extends Controller
     public function update(SupplierUpdateRequest $request, string $id): RedirectResponse
     {
         try {
-            Http::put("{$this->baseUrl}/{$id}", $request->validated());
+            Http::put("{$this->supplierUrl}/{$id}", $request->validated());
             return redirect()->route('suppliers.index')->with('success', 'Supplier updated successfully.');
         } catch (ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
@@ -72,7 +72,7 @@ class ManageSuppliersController extends Controller
 
     public function destroy(string $id): RedirectResponse
     {
-        Http::delete("{$this->baseUrl}/{$id}");
+        Http::delete("{$this->supplierUrl}/{$id}");
 
         return redirect()->route('suppliers.index')->with('success', 'Supplier deleted successfully.');
     }
