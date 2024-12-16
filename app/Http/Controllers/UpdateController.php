@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class UpdateController extends Controller
 {
@@ -19,100 +20,71 @@ class UpdateController extends Controller
         $this->baseUrl = Config::get('app.mcsd_fastapi_app_url');
     }
 
-    public function update(Request $request): View
+    public function update(Request $request): RedirectResponse
     {
         $id = $request->input('id');
         $resourceType = $request->input('resourceType');
+        $since = $request->input('since');
+
+        if ($since !== null) {
+            $since = Carbon::parse($since)->shiftTimezone('Europe/Amsterdam')->toIso8601String();
+        }
 
         if (($resourceType !== null) && ($id === null)) {
-            $responseData = [
+            $errorData = [
                 'error' => 'Error occured: You must set ID when you want to use Resource Type'
             ];
-            return view('mapper-overview', ['responseData' => $responseData]);
+            return redirect()->back()->withErrors($errorData);
         }
 
-        return $this->updateConsumer($id, $resourceType);
+        return $this->updateConsumer($id, $resourceType, $since);
     }
 
-    public function updateConsumer(?string $id = null, ?string $resourceType = null): View
-    {
-        # DO UPDATE
-        try {
-            if (is_null($id) && is_null($resourceType)) {
-                $response = Http::post($this->baseUrl . '/update_resources');
-            } elseif (!is_null($id) && is_null($resourceType)) {
-                $response = Http::post($this->baseUrl . '/update_resources/' . $id);
-            } elseif (!is_null($id) && !is_null($resourceType)) {
-                $response = Http::post($this->baseUrl . '/update_resources/' . $id . '/' . $resourceType);
-            } else {
-                $responseData = [
-                    'error' => 'Invalid parameters'
-                ];
-                return view('mapper-overview', ['responseData' => $responseData]);
-            }
-            $responseData = $response->json();
-            if ($response->status() !== 200) {
-                $responseData = [
-                    'error' => 'Error occured: ' . $response->status() . ' ' . $response->body()
-                ];
-                return view('mapper-overview', ['responseData' => $responseData]);
-            }
-        } catch (ConnectionException $e) {
-            $responseData = [
-                'error' => 'Connection error: ' . $e->getMessage()
-            ];
-            return view('mapper-overview', ['responseData' => $responseData]);
-        }
+    private function updateConsumer(
+        ?string $id = null,
+        ?string $resourceType = null,
+        ?string $since = null
+    ): RedirectResponse {
+        $errorData = null;
 
-        # RETURN VIEW
-        try {
-            // Call FastAPI app with a timeout
-            if (is_null($id) && is_null($resourceType)) {
-                $response = Http::get($this->baseUrl . '/resource_map');
-            } elseif (!is_null($id) && is_null($resourceType)) {
-                $response = Http::get($this->baseUrl . '/resource_map', [
-                    'supplier_id' => $id,
-                ]);
-            } elseif (!is_null($id) && !is_null($resourceType)) {
-                $response = Http::get($this->baseUrl . '/resource_map', [
-                    'supplier_id' => $id,
-                    'resource_type' => $resourceType
-                ]);
-            } else {
-                $responseData = [
-                    'error' => 'Invalid parameters'
-                ];
-                return view('mapper-overview', ['responseData' => $responseData]);
+        //  Create URL for the request
+        if (is_null($id) && is_null($resourceType)) {
+            $url = $this->baseUrl . '/update_resources';
+        } elseif (!is_null($id) && is_null($resourceType)) {
+            $url = $this->baseUrl . '/update_resources/' . $id;
+        } elseif (!is_null($id) && !is_null($resourceType)) {
+            $url = $this->baseUrl . '/update_resources/' . $id . '/' . $resourceType;
+        } else {
+            $errorData = [
+                'error' => 'Invalid parameters'
+            ];
+        }
+        if (!isset($errorData)) {
+            $sinceParam = null;
+            if ($since !== null) {
+                $sinceParam = '?since=' . urlencode($since);
             }
-            $responseData = $response->json();
-            if ($response->status() === 200) {
-                if (!isset($responseData[0])) {
-                    $responseData = [
-                        'error' => 'No data found'
+            try {
+                $response = Http::timeout(0)->post($url . ($sinceParam ?? ''));
+                if ($response->status() !== 200) {
+                    $errorData = [
+                        'error' => 'Error occured: ' . $response->status() . ' ' . $response->body()
                     ];
-                    return view('mapper-overview', ['responseData' => $responseData]);
+                } elseif ($response->json() === []) {
+                    $errorData = [
+                        'error' => 'No data was updated'
+                    ];
                 }
-                $headers = array_keys($responseData[0]);
-                $rows = array_map(function ($item) {
-                    return array_values($item);
-                }, $responseData);
-                $responseData = [
-                    'headers' => $headers,
-                    'rows' => $rows
+            } catch (ConnectionException $e) {
+                $errorData = [
+                    'error' => 'Connection error: ' . $e->getMessage()
                 ];
-            } else {
-                $responseData = [
-                    'error' => 'Error occured: ' . $response->status() . ' ' . $response->body()
-                ];
-                return view('mapper-overview', ['responseData' => $responseData]);
             }
-        } catch (ConnectionException $e) {
-            $responseData = [
-                'error' => 'Connection error: ' . $e->getMessage()
-            ];
-            return view('mapper-overview', ['responseData' => $responseData]);
+        }
+        if (isset($errorData)) {
+            return redirect()->back()->withErrors($errorData);
         }
 
-        return view('mapper-overview', ['responseData' => $responseData]);
+        return redirect()->route('resource.mapper', ['id' => $id, 'resourceType' => $resourceType]);
     }
 }

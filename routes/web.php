@@ -6,6 +6,7 @@ use App\Http\Controllers\IndexController;
 use App\Http\Controllers\UpdateController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ManageSuppliersController;
+use App\Http\Controllers\MapperController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,8 @@ use App\Http\Controllers\ManageSuppliersController;
 
 Route::get('/', IndexController::class)->name('index');
 Route::post('/update', [UpdateController::class, 'update'])->name('consumer.update');
+
+Route::get('/mapper', [MapperController::class, 'index'])->name('resource.mapper');
 
 Route::get('/suppliers', ManageSuppliersController::class)->name('suppliers.index');
 

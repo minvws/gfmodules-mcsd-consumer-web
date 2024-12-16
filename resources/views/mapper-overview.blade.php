@@ -1,14 +1,14 @@
 @extends('layouts.guest')
 @section('content')
-@if (isset($responseData['error']))
+@if (isset($errors))
 <section>
 <div class="error" aria-label="{{__('Error') }}">
     <ul>
-        <li>{{ $responseData['error'] }}</li>
+        <li>{{ $errors }}</li>
     </ul>
 </div>
 </section>
 @else
-<x-mapper :headers="$responseData['headers']" :rows="$responseData['rows']" />
+<x-mapper :headers="$mapperData['headers']" :rows="$mapperData['rows']" />
 @endif
 @endsection
