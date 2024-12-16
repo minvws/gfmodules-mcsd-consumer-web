@@ -1,10 +1,10 @@
 @extends('layouts.guest')
 @section('content')
-@if (isset($error['error']))
+@if (isset($errors))
 <section>
 <div class="error" aria-label="{{__('Error') }}">
     <ul>
-        <li>{{ $error['error'] }}</li>
+        <li>{{ $errors }}</li>
     </ul>
 </div>
 </section>

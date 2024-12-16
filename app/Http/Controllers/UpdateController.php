@@ -27,15 +27,14 @@ class UpdateController extends Controller
         $since = $request->input('since');
 
         if ($since !== null) {
-            $since = Carbon::parse($since)->setTimezone('Europe/Amsterdam')->toIso8601String();
-            $since = str_replace('+', '%2B', $since);
+            $since = Carbon::parse($since)->shiftTimezone('Europe/Amsterdam')->toIso8601String();
         }
 
         if (($resourceType !== null) && ($id === null)) {
             $errorData = [
                 'error' => 'Error occured: You must set ID when you want to use Resource Type'
             ];
-            return redirect()->route('resource.mapper')->withErrors($errorData);
+            return redirect()->back()->withErrors($errorData);
         }
 
         return $this->updateConsumer($id, $resourceType, $since);
@@ -46,38 +45,46 @@ class UpdateController extends Controller
         ?string $resourceType = null,
         ?string $since = null
     ): RedirectResponse {
-        # DO UPDATE
-        try {
-            if (is_null($id) && is_null($resourceType)) {
-                $response = Http::timeout(0)->post($this->baseUrl . '/update_resources', [
-                    '_since' => $since
-                ]);
-            } elseif (!is_null($id) && is_null($resourceType)) {
-                $response = Http::timeout(0)->post($this->baseUrl . '/update_resources/' . $id, [
-                    '_since' => $since
-                ]);
-            } elseif (!is_null($id) && !is_null($resourceType)) {
-                $response = Http::timeout(0)->post($this->baseUrl . '/update_resources/' . $id . '/' . $resourceType, [
-                    '_since' => $since
-                ]);
-            } else {
-                $errorData = [
-                    'error' => 'Invalid parameters'
-                ];
-                return redirect()->route('resource.mapper')->withErrors($errorData);
-            }
-            if ($response->status() !== 200) {
-                $errorData = [
-                    'error' => 'Error occured: ' . $response->status() . ' ' . $response->body()
-                ];
-                return redirect()->route('resource.mapper')->withErrors($errorData);
-            }
-        } catch (ConnectionException $e) {
+        $errorData = null;
+
+        //  Create URL for the request
+        if (is_null($id) && is_null($resourceType)) {
+            $url = $this->baseUrl . '/update_resources';
+        } elseif (!is_null($id) && is_null($resourceType)) {
+            $url = $this->baseUrl . '/update_resources/' . $id;
+        } elseif (!is_null($id) && !is_null($resourceType)) {
+            $url = $this->baseUrl . '/update_resources/' . $id . '/' . $resourceType;
+        } else {
             $errorData = [
-                'error' => 'Connection error: ' . $e->getMessage()
+                'error' => 'Invalid parameters'
             ];
-            return redirect()->route('resource.mapper')->withErrors($errorData);
         }
+        if (!isset($errorData)) {
+            $sinceParam = null;
+            if ($since !== null) {
+                $sinceParam = '?since=' . urlencode($since);
+            }
+            try {
+                $response = Http::timeout(0)->post($url . ($sinceParam ?? ''));
+                if ($response->status() !== 200) {
+                    $errorData = [
+                        'error' => 'Error occured: ' . $response->status() . ' ' . $response->body()
+                    ];
+                } elseif ($response->json() === []) {
+                    $errorData = [
+                        'error' => 'No data was updated'
+                    ];
+                }
+            } catch (ConnectionException $e) {
+                $errorData = [
+                    'error' => 'Connection error: ' . $e->getMessage()
+                ];
+            }
+        }
+        if (isset($errorData)) {
+            return redirect()->back()->withErrors($errorData);
+        }
+
         return redirect()->route('resource.mapper', ['id' => $id, 'resourceType' => $resourceType]);
     }
 }
