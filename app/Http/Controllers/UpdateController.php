@@ -23,68 +23,53 @@ class UpdateController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $id = $request->input('id');
-        $resourceType = $request->input('resourceType');
         $since = $request->input('since');
 
         if ($since !== null) {
             $since = Carbon::parse($since)->shiftTimezone('Europe/Amsterdam')->toIso8601String();
         }
 
-        if (($resourceType !== null) && ($id === null)) {
-            $errorData = [
-                'error' => 'Error occured: You must set ID when you want to use Resource Type'
-            ];
-            return redirect()->back()->withErrors($errorData);
-        }
-
-        return $this->updateConsumer($id, $resourceType, $since);
+        return $this->updateConsumer($id, $since);
     }
 
     private function updateConsumer(
         ?string $id = null,
-        ?string $resourceType = null,
         ?string $since = null
     ): RedirectResponse {
         $errorData = null;
 
         //  Create URL for the request
-        if (is_null($id) && is_null($resourceType)) {
+        if (is_null($id)) {
             $url = $this->baseUrl . '/update_resources';
-        } elseif (!is_null($id) && is_null($resourceType)) {
-            $url = $this->baseUrl . '/update_resources/' . $id;
-        } elseif (!is_null($id) && !is_null($resourceType)) {
-            $url = $this->baseUrl . '/update_resources/' . $id . '/' . $resourceType;
         } else {
-            $errorData = [
-                'error' => 'Invalid parameters'
-            ];
+            $url = $this->baseUrl . '/update_resources/' . $id;
         }
-        if (!isset($errorData)) {
-            $sinceParam = null;
-            if ($since !== null) {
-                $sinceParam = '?since=' . urlencode($since);
-            }
-            try {
-                $response = Http::timeout(0)->post($url . ($sinceParam ?? ''));
-                if ($response->status() !== 200) {
-                    $errorData = [
-                        'error' => 'Error occured: ' . $response->status() . ' ' . $response->body()
-                    ];
-                } elseif ($response->json() === []) {
-                    $errorData = [
-                        'error' => 'No data was updated'
-                    ];
-                }
-            } catch (ConnectionException $e) {
+
+        $sinceParam = null;
+        if ($since !== null) {
+            $sinceParam = '?since=' . urlencode($since);
+        }
+        try {
+            $response = Http::timeout(0)->post($url . ($sinceParam ?? ''));
+            if ($response->status() !== 200) {
                 $errorData = [
-                    'error' => 'Connection error: ' . $e->getMessage()
+                    'error' => 'Error occured: ' . $response->status() . ' ' . $response->body()
+                ];
+            } elseif ($response->json() === []) {
+                $errorData = [
+                    'error' => 'No data was updated'
                 ];
             }
+        } catch (ConnectionException $e) {
+            $errorData = [
+                'error' => 'Connection error: ' . $e->getMessage()
+            ];
         }
+
         if (isset($errorData)) {
             return redirect()->back()->withErrors($errorData);
         }
 
-        return redirect()->route('resource.mapper', ['id' => $id, 'resourceType' => $resourceType]);
+        return redirect()->route('resource.mapper', ['id' => $id])->with('success', 'Updated successfully.');
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\UpdateController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ManageSuppliersController;
 use App\Http\Controllers\MapperController;
+use App\Http\Controllers\ConsumerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +21,7 @@ use App\Http\Controllers\MapperController;
 */
 
 Route::get('/', IndexController::class)->name('index');
-Route::post('/update', [UpdateController::class, 'update'])->name('consumer.update');
+Route::get('/update', [UpdateController::class, 'update'])->name('consumer.update');
 
 Route::get('/mapper', [MapperController::class, 'index'])->name('resource.mapper');
 
@@ -35,3 +36,6 @@ Route::get('/suppliers/{id}' . '/edit', [ManageSuppliersController::class, 'edit
 Route::put('/suppliers/{id}', [ManageSuppliersController::class, 'update'])->name('suppliers.update');
 
 Route::get('/suppliers/{id}' . "/delete", [ManageSuppliersController::class, 'destroy'])->name('suppliers.destroy');
+
+Route::get('/consumer', [ConsumerController::class, 'index'])->name('consumer.index');
+Route::get('/consumer-view', [ConsumerController::class, 'getResource'])->name('consumer.getResource');
