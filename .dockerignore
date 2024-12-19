@@ -1,5 +1,0 @@
-# .dockerignore
-.git*
-vendor
-node_modules
-tests
