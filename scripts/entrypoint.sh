@@ -5,6 +5,7 @@ set -e
 make setup
 
 npm install && npm run build
-composer install
 
-php artisan serve --port=8510
+rm -rf ~/.symfony5
+composer install
+symfony server:start
