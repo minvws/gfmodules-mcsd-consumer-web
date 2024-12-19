@@ -4,14 +4,8 @@ NPMRC_FILE_NAME=".npmrc"
 GITHUB_REGISTRY="//npm.pkg.github.com/:_authToken="
 
 ask_for_token() {
-    echo -e "\nYou need to add your GitHub read packages token to $1\n"
-    echo "Please enter your GitHub read packages token: "
-    read TOKEN
-    if [ -z "$TOKEN" ]; then
-        echo "Token is required. Exiting script."
-        exit 1
-    fi
-    echo -e "\n$GITHUB_REGISTRY$TOKEN\n" >> "$1"
+    echo -e "\nYou need to add your GitHub read packages token to be able to read private npm packages\n"
+    echo "Please enter your GitHub read packages token in the .npmrc file in the root of this project"
 }
 
 check_npmrc() {

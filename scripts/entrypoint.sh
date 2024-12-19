@@ -2,9 +2,9 @@
 
 set -e
 
-make setup-config
-make setup-php
+make setup
 
-rm -rf ~/.symfony5
+npm install && npm run build
 composer install
-symfony server:start
+
+php artisan serve --port=8510
