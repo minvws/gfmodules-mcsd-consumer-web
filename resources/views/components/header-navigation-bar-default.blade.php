@@ -9,6 +9,8 @@
             <li>
                 <a href="{{ route('index') }}"  aria-current="page" ><span class="icon icon-home">Home-icoon</span>@lang('Landing')</a>
                 <a href="{{ route('suppliers.index') }}"  aria-current="page" ><span class="icon icon-home">Home-icoon</span>@lang('Suppliers')</a>
+                <a href="{{ route('consumer.index') }}"  aria-current="page" ><span class="icon icon-home">Home-icoon</span>@lang('Consumer')</a>
+
             </li>
         </ul>
     </div>

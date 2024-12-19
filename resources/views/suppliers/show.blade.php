@@ -13,6 +13,7 @@
                 <a href="{{ route('suppliers.edit', $supplier['id']) }}" class="button">Edit</a>
                 <a href="{{ route('suppliers.destroy', $supplier['id']) }}" class="button">Delete</a>
                 <a href="{{ route('resource.mapper', ['id' => $supplier['id']]) }}" class="button">Show Mapper</a>
+                <a href="{{ route('consumer.update', ['id' => $supplier['id']]) }}" class="button">Update consumer</a>
             </div>
         </div>
     </section>

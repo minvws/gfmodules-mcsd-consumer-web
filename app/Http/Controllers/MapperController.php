@@ -22,36 +22,30 @@ class MapperController extends Controller
     public function index(Request $request): View
     {
         $id = $request->input('id');
-        $resourceType = $request->input('resourceType');
 
         $errors = null;
         $responseData = null;
 
         try {
-            if (is_null($id) && !is_null($resourceType)) {
-                $errors = 'Invalid parameters, you must set ID when you want to use Resource Type';
-            } else {
-                $response = Http::get($this->mapperUrl, [
-                    'supplier_id' => $id,
-                    'resource_type' => $resourceType
-                ]);
-                $responseData = $response->json();
-                if ($response->status() === 200) {
-                    if (!isset($responseData[0])) {
-                        $errors = 'No data found';
-                    } else {
-                        $headers = array_keys($responseData[0]);
-                        $rows = array_map(function ($item) {
-                            return array_values($item);
-                        }, $responseData);
-                        $responseData = [
-                            'headers' => $headers,
-                            'rows' => $rows
-                        ];
-                    }
+            $response = Http::get($this->mapperUrl, [
+                'supplier_id' => $id,
+            ]);
+            $responseData = $response->json();
+            if ($response->status() === 200) {
+                if (!isset($responseData[0])) {
+                    $errors = 'No data found';
                 } else {
-                    $errors = 'Error occurred: ' . $response->status() . ' ' . $response->body();
+                    $headers = array_keys($responseData[0]);
+                    $rows = array_map(function ($item) {
+                        return array_values($item);
+                    }, $responseData);
+                    $responseData = [
+                        'headers' => $headers,
+                        'rows' => $rows
+                    ];
                 }
+            } else {
+                $errors = 'Error occurred: ' . $response->status() . ' ' . $response->body();
             }
         } catch (ConnectionException $e) {
             $errors = 'error: ' . $e->getMessage();

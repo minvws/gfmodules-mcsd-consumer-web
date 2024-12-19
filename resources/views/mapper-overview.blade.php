@@ -9,6 +9,7 @@
 </div>
 </section>
 @else
+<x-success-notification class="custom-class" />
 <x-mapper :headers="$mapperData['headers']" :rows="$mapperData['rows']" />
 @endif
 @endsection
