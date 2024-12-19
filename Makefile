@@ -9,17 +9,18 @@ all: help
 setup: setup-config setup-npm setup-php  ## Setup the project
 
 setup-config:
-	. scripts/setup-config.sh
+	bash scripts/setup-config.sh
 
 setup-npm:
-	. scripts/setup-npm.sh
+	bash scripts/setup-npm.sh
 
 setup-php:
-	. scripts/setup-php.sh
+	bash scripts/setup-php.sh
 
 run: ## Run the project
 	npm run build
-	php artisan serve --port=8510
+	vendor/bin/sail up -d
+# php artisan serve --port=8510
 
 
 test: test-php test-js ## Runs tests
