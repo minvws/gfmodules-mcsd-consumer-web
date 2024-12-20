@@ -1,11 +1,11 @@
 # gfmodules-mcsd-consumer-web-private
 
-A web application to have the following:
+A web application to manage and view consumer resources efficiently. This application includes the following features:
 
-- [X] Screen to manage suppliers (add/update/delete)
-- [X] Screen to perform the update on the resource and shows the resource map
-- [X] Screen to view consumer resources
-- [X] Screen to compare the history of a resource
+- Screen to manage suppliers (add/update/delete)
+- Screen to perform updates on resources and display the resource map
+- Screen to view consumer resources
+- Screen to compare the history of a resource
 
 ## Requirements
 
