@@ -14,11 +14,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -  && \
     apt-get install -y nodejs
 
-# Install the Symphony CLI
-RUN wget https://github.com/symfony-cli/symfony-cli/releases/download/v5.8.15/symfony-cli_linux_amd64.tar.gz
-RUN tar -xvzf symfony-cli_linux_amd64.tar.gz
-RUN mv symfony /usr/local/bin/symfony
-
 RUN groupadd --system ${APP_GROUP} --gid=${NEW_GID} && \
     adduser \
         --disabled-password \

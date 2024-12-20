@@ -6,7 +6,7 @@ services:
           NEW_UID: ${NEW_UID:-1000}
           NEW_GID: ${NEW_GID:-1000}
     ports:
-      - "8510:8000"
+      - "8510:8510"
     volumes:
       - .:/app
     networks:

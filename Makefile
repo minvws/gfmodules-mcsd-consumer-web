@@ -19,7 +19,7 @@ setup-php:
 
 run: ## Run the project
 	npm run build
-	php artisan serve --port=8510
+	php artisan serve --host 0.0.0.0 --port=8510
 
 
 test: test-php test-js ## Runs tests
