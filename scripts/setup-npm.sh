@@ -4,8 +4,14 @@ NPMRC_FILE_NAME=".npmrc"
 GITHUB_REGISTRY="//npm.pkg.github.com/:_authToken="
 
 ask_for_token() {
-    echo -e "\nYou need to add your GitHub read packages token to be able to read private npm packages\n"
-    echo "Please enter your GitHub read packages token in the .npmrc file in the root of this project"
+    echo -e "\nYou need to add your GitHub read packages token to $1\n"
+    echo "Please enter your GitHub read packages token: "
+    read TOKEN
+    if [ -z "$TOKEN" ]; then
+        echo "Token is required. Exiting script."
+        exit 1
+    fi
+    printf "\n$GITHUB_REGISTRY$TOKEN\n" >> "$1"
 }
 
 check_npmrc() {
@@ -13,8 +19,13 @@ check_npmrc() {
     if test -f "$NPMRC_PATH"; then
         if grep -q "$GITHUB_REGISTRY" "$NPMRC_PATH"; then
             echo ".npmrc file with GitHub registry found at $NPMRC_PATH"
-            return 0
+            npm ci --ignore-scripts
+            exit 0
         fi
+        # If .npmrc file does not contain GitHub registry, ask for token
+        echo ".npmrc file found at $NPMRC_PATH but does not contain GitHub registry"
+        ask_for_token "$NPMRC_PATH"
+        check_npmrc "$(pwd)/$NPMRC_FILE_NAME"
     fi
     return 1
 }
@@ -33,14 +44,9 @@ if check_npmrc "$(pwd)/$NPMRC_FILE_NAME"; then
     exit 0
 fi
 
-# Check in home directory
-if check_npmrc "$HOME/$NPMRC_FILE_NAME"; then
-    npm ci --ignore-scripts
-    exit 0
-fi
-
 # If no .npmrc file found, create one in the home directory and ask for token
 echo "No .npmrc file found in the home directory, current working directory or RUNNER_TEMP directory"
 echo "Creating a new .npmrc file in the home directory and asking for a token"
-ask_for_token "$HOME/.npmrc"
-npm ci --ignore-scripts
+ask_for_token "$(pwd)/$NPMRC_FILE_NAME"
+
+exit 1

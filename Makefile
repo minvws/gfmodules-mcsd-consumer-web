@@ -19,8 +19,7 @@ setup-php:
 
 run: ## Run the project
 	npm run build
-	vendor/bin/sail up -d
-# php artisan serve --port=8510
+	php artisan serve --port=8510
 
 
 test: test-php test-js ## Runs tests
