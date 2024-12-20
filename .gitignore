@@ -31,5 +31,4 @@ yarn.lock
 *.key
 *.crt
 *.pub
-.autopilot
 .npmrc
