@@ -5,7 +5,14 @@ NPMRC_TEMPLATE_FILE_NAME=".npmrc-template"
 GITHUB_REGISTRY="//npm.pkg.github.com/:_authToken="
 
 ask_for_token() {
-    echo -e "\nYou need to add your GitHub read packages token to $1\n"
+    echo -e "\nYou need to add your GitHub read packages token to $NPMRC_FILE_NAME\n"
+    if [ -f /.dockerenv ]; then
+        echo "run:  make setup  before running the container to setup package token in .npmrc"
+        echo "After running make setup, you can start the container again"
+        exit 1
+    fi
+    echo "Create a token by visiting https://github.com/settings/tokens/new?scopes=read:packages"
+    echo "Copy created token and paste it below"
     echo "Please enter your GitHub read packages token: "
     read TOKEN
     if [ -z "$TOKEN" ]; then

@@ -2,17 +2,28 @@
 
 A web application to have the following:
 
-- [ ] Screen to manage suppliers (add/update/delete)
-- [ ] Screen to perform the update on the resource and shows the resource map
-- [ ] Screen to view consumer resources
-- [ ] Screen to compare the history of a resource
+- [X] Screen to manage suppliers (add/update/delete)
+- [X] Screen to perform the update on the resource and shows the resource map
+- [X] Screen to view consumer resources
+- [X] Screen to compare the history of a resource
 
 ## Requirements
 
-Php 8.2
+- <https://github.com/minvws/gfmodules-mcsd-consumer-private> running in a docker container
+- Php 8.2
+- [nodejs](https://nodejs.org/en/download/package-manager)
+
+> **Note:** Nodejs needs a github read package token to install the private packages. This can be done manually or the installation script will guide you through this process as well.
 
 ## Setup & Install
 
-0. Copy env.example to .env
 1. make setup
 2. make run
+
+Or start it in a docker container (This is only possible if the .npmrc file has been created with the correct access token):
+
+```bash
+docker compose up --build --remove-orphans
+```
+
+The frontend is also automatically started when using the [gfmodules-coordination](https://github.com/minvws/gfmodules-coordination-private) setup script.
