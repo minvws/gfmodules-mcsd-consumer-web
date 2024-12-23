@@ -2,9 +2,7 @@
 @section('content')
     <section>
         <div>
-            @if ($errors->any())
-                <x-validation-errors class="custom-error-class" />
-            @endif
+            <x-validation-errors class="custom-error-class" />
             <h1>Create Supplier</h1>
             <form action="{{ route('suppliers.store') }}" method="POST">
                 @csrf

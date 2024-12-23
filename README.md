@@ -1,6 +1,6 @@
 # gfmodules-mcsd-consumer-web-private
 
-A web application to manage and view consumer resources efficiently. This application includes the following features:
+A web application to efficiently view supplier FHIR resources and manage the counter part from consumer. This application includes the following features:
 
 - Screen to manage suppliers (add/update/delete)
 - Screen to perform updates on resources and display the resource map

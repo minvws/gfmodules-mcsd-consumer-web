@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Config;
 use App\Http\Requests\SupplierStoreRequest;
 use App\Http\Requests\SupplierUpdateRequest;
 use Illuminate\Validation\ValidationException;
+use Exception;
+use App\Exceptions\BackendConnectionError;
 
 class ManageSuppliersController extends Controller
 {
@@ -23,7 +25,12 @@ class ManageSuppliersController extends Controller
 
     public function __invoke(): View
     {
-        $response = Http::get($this->supplierUrl);
+        try {
+            $response = Http::get($this->supplierUrl);
+        } catch (Exception $e) {
+            throw new BackendConnectionError($e->getMessage());
+        }
+
         $suppliers = $response->json();
 
         return view('suppliers.index', compact('suppliers'));
@@ -41,12 +48,18 @@ class ManageSuppliersController extends Controller
             return redirect()->route('suppliers.index')->with('success', 'Supplier created successfully.');
         } catch (ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (Exception $e) {
+            throw new BackendConnectionError($e->getMessage());
         }
     }
 
     public function show(string $id): View
     {
-        $response = Http::get("{$this->supplierUrl}/{$id}");
+        try {
+            $response = Http::get("{$this->supplierUrl}/{$id}");
+        } catch (Exception $e) {
+            throw new BackendConnectionError($e->getMessage());
+        }
         $supplier = $response->json();
 
         return view('suppliers.show', compact('supplier'));
@@ -54,7 +67,11 @@ class ManageSuppliersController extends Controller
 
     public function edit(string $id): View
     {
-        $response = Http::get("{$this->supplierUrl}/{$id}");
+        try {
+            $response = Http::get("{$this->supplierUrl}/{$id}");
+        } catch (Exception $e) {
+            throw new BackendConnectionError($e->getMessage());
+        }
         $supplier = $response->json();
 
         return view('suppliers.edit', compact('supplier'));
@@ -67,13 +84,18 @@ class ManageSuppliersController extends Controller
             return redirect()->route('suppliers.index')->with('success', 'Supplier updated successfully.');
         } catch (ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (Exception $e) {
+            throw new BackendConnectionError($e->getMessage());
         }
     }
 
     public function destroy(string $id): RedirectResponse
     {
-        Http::delete("{$this->supplierUrl}/{$id}");
-
+        try {
+            Http::delete("{$this->supplierUrl}/{$id}");
+        } catch (Exception $e) {
+            throw new BackendConnectionError($e->getMessage());
+        }
         return redirect()->route('suppliers.index')->with('success', 'Supplier deleted successfully.');
     }
 }
