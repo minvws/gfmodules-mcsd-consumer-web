@@ -31,3 +31,4 @@ yarn.lock
 *.key
 *.crt
 *.pub
+.npmrc

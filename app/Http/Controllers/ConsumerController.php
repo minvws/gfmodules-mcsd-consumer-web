@@ -84,7 +84,6 @@ class ConsumerController extends Controller
      */
     private function getBaseUrl(): array
     {
-        // return "http://localhost:8502"; # Fix for local development (I hope)
         try {
             $response = Http::get(Config::get('app.mcsd_fastapi_app_url') . '/consumer');
             if ($response->status() === 200) {
