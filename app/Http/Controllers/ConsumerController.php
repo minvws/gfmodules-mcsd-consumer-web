@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Config;
+use App\Exceptions\BackendConnectionError;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+use Exception;
 
 class ConsumerController extends Controller
 {
@@ -32,21 +34,10 @@ class ConsumerController extends Controller
         }
 
         $get_url = $this->getBaseUrl();
-        if (isset($get_url['error'])) {
-            return view('consumer.index', ['error' => $get_url['error']]);
-        }
 
         $consumerResource = $this->retrieveResource($get_url['url'], $resourceType, $resourceId);
 
-        if (isset($consumerResource['error'])) {
-            return view('consumer.index', ['error' => $consumerResource['error']]);
-        }
-
         $supplierData = $this->getSupplierUrlAndResourceId($resourceId);
-
-        if (isset($supplierData['error'])) {
-            return view('consumer.index', ['error' => $supplierData['error']]);
-        }
 
         $supplierResource = $this->retrieveResource(
             $supplierData['supplier_url'],
@@ -54,12 +45,18 @@ class ConsumerController extends Controller
             $supplierData['resource_id']
         );
 
-        if (isset($supplierResource['error'])) {
-            return view('consumer.index', ['error' => $supplierResource['error']]);
-        }
+        $version = [
+            'consumer' => $this->getResourceVersion($consumerResource),
+            'supplier' => $this->getResourceVersion($supplierResource)
+        ];
+
+        $version['match'] = $version['consumer'] === $version['supplier'];
+
+        $supplierId = $supplierData['supplier_id'];
 
         return view('consumer.resource', ['consumerData' =>
-            $consumerResource['resourceData'], 'supplierData' => $supplierResource['resourceData']]);
+            $consumerResource['resourceData'], 'supplierData' => $supplierResource['resourceData'],
+            'version' => $version, 'supplierId' => $supplierId]);
     }
 
     /**
@@ -69,14 +66,13 @@ class ConsumerController extends Controller
     {
         try {
             $response = Http::get($url . "/$resourceType/$resourceId/_history");
-            if ($response->status() === 200) {
-                return ['resourceData' => $response->json()];
-            } else {
-                return ['error' => 'Error occurred: ' . $response->status() . ' ' . $response->body()];
-            }
-        } catch (\Exception $e) {
-            return ['error' => 'Error occurred: ' . $e->getMessage()];
+        } catch (Exception $e) {
+            throw new BackendConnectionError($e->getMessage());
         }
+        if ($response->status() !== 200) {
+            throw new BackendConnectionError('Error occurred: ' . $response->status() . ' ' . $response->body());
+        }
+        return ['resourceData' => $response->json()];
     }
 
     /**
@@ -86,14 +82,13 @@ class ConsumerController extends Controller
     {
         try {
             $response = Http::get(Config::get('app.mcsd_fastapi_app_url') . '/consumer');
-            if ($response->status() === 200) {
-                return ['url' => $response['consumer_url']];
-            } else {
-                return ['error' => 'Error occurred: ' . $response->status() . ' ' . $response->body()];
-            }
-        } catch (\Exception $e) {
-            return ['error' => 'Error occurred: ' . $e->getMessage()];
+        } catch (Exception $e) {
+            throw new BackendConnectionError($e->getMessage());
         }
+        if ($response->status() !== 200) {
+            throw new BackendConnectionError('Error occurred: ' . $response->status() . ' ' . $response->body());
+        }
+        return ['url' => $response['consumer_url']];
     }
 
     /**
@@ -105,18 +100,30 @@ class ConsumerController extends Controller
             $mapper = Http::get($this->mapperUrl . '/resource_map', [
                 'consumer_resource_id' => $resourceId,
             ]);
-            if ($mapper->status() !== 200) {
-                return ['error' => 'Error occurred: ' . $mapper->status() . ' ' . $mapper->body()];
-            }
-            $supplierId = $mapper->json()[0]['supplier_id'];
-            $supplier = Http::get($this->mapperUrl . "/supplier/$supplierId");
-            if ($supplier->status() !== 200) {
-                return ['error' => 'Error occurred: ' . $supplier->status() . ' ' . $supplier->body()];
-            }
-            return ['supplier_url' => $supplier->json()['endpoint'],
-                'resource_id' => $mapper->json()[0]['supplier_resource_id']];
-        } catch (\Exception $e) {
-            return ['error' => 'Error occurred: ' . $e->getMessage()];
+        } catch (Exception $e) {
+            throw new BackendConnectionError($e->getMessage());
         }
+        if ($mapper->status() !== 200) {
+            throw new BackendConnectionError('Error occurred: ' . $mapper->status() . ' ' . $mapper->body());
+        }
+        if (empty($mapper->json())) {
+            throw new BackendConnectionError('No supplier found for this resource');
+        }
+        $supplierId = $mapper->json()[0]['supplier_id'];
+        $supplier = Http::get($this->mapperUrl . "/supplier/$supplierId");
+        if ($supplier->status() !== 200) {
+            throw new BackendConnectionError('Error occurred: ' . $supplier->status() . ' ' . $supplier->body());
+        }
+        return ['supplier_url' => $supplier->json()['endpoint'],
+            'resource_id' => $mapper->json()[0]['supplier_resource_id'],
+            'supplier_id' => $supplierId];
+    }
+
+    /**
+     *  @param array<string, mixed> $resourceData
+    */
+    private function getResourceVersion(array $resourceData): string
+    {
+        return (string) $resourceData['resourceData']["entry"][0]["resource"]['meta']['versionId'];
     }
 }

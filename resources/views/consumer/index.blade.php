@@ -3,13 +3,7 @@
 @section('content')
 <section>
     <div>
-        @if (isset($error))
-        <section role="alert" class="error no-print" aria-label="{{__('error') }}">
-            <div>
-                <p><span>{{__('Error') }}:</span> {{ $error }}</p>
-            </div>
-        </section>
-        @endif
+        <x-validation-errors class="custom-error-class" />
         <h1>Consumer</h1>
         <p>View consumer resources</p>
         <form action="{{ route('consumer.getResource') }}" method="get">

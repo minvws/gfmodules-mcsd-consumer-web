@@ -6,10 +6,25 @@
             <div class="error" role="group" aria-label="{{__('Error') }}">
                 <span>@lang('Error')</span>
                 <h1>
+                @if(isset($error))
+                    {{ $error }}
+                @else
                     @lang('Error')
-                    @lang(403)
+                @endif
+                <br>
+                @if(isset($code))
+                    {{ $code }}
+                @else
+                    @lang('403')
+                @endif
                 </h1>
-                <p>This is an error message</p>
+                <p>
+                @if(isset($message))
+                    {{ $message }}
+                @else
+                    @lang('An error occured')
+                @endif
+                </p>
             </div>
         </div>
     </section>

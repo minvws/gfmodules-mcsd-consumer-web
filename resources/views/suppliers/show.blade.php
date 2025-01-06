@@ -3,6 +3,7 @@
 @section('content')
     <section>
         <div>
+            <x-success-notification class="custom-class" />
             <h1>Care provider supplier</h1>
             <p>ID: {{ $supplier['id'] }}</p>
             <p>Name: {{ $supplier['name'] }}</p>

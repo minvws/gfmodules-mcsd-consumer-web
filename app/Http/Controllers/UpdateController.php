@@ -10,6 +10,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Exceptions\BackendConnectionError;
 
 class UpdateController extends Controller
 {
@@ -22,7 +23,7 @@ class UpdateController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        $id = $request->input('id');
+        $id = $request->input('supplier_id');
         $since = $request->input('since');
 
         if ($since !== null) {
@@ -36,9 +37,6 @@ class UpdateController extends Controller
         ?string $id = null,
         ?string $since = null
     ): RedirectResponse {
-        $errorData = null;
-
-        //  Create URL for the request
         if (is_null($id)) {
             $url = $this->baseUrl . '/update_resources';
         } else {
@@ -52,22 +50,14 @@ class UpdateController extends Controller
         try {
             $response = Http::timeout(0)->post($url . ($sinceParam ?? ''));
             if ($response->status() !== 200) {
-                $errorData = [
-                    'error' => 'Error occured: ' . $response->status() . ' ' . $response->body()
-                ];
+                throw new BackendConnectionError('Error occured: ' . $response->status() . ' ' . $response->body());
             } elseif ($response->json() === []) {
-                $errorData = [
+                return redirect()->back()->withErrors([
                     'error' => 'No data was updated'
-                ];
+                ]);
             }
         } catch (ConnectionException $e) {
-            $errorData = [
-                'error' => 'Connection error: ' . $e->getMessage()
-            ];
-        }
-
-        if (isset($errorData)) {
-            return redirect()->back()->withErrors($errorData);
+            throw new BackendConnectionError($e->getMessage());
         }
 
         return redirect()->route('resource.mapper', ['id' => $id])->with('success', 'Updated successfully.');

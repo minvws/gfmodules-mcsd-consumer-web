@@ -8,8 +8,14 @@
         <form action="{{ route('consumer.update') }}" method="GET">
             @csrf
             <div>
-                <label for="supplier ID">Supplier ID:</label>
-                <input type="text" id="id" name="id">
+            <label for="supplier_id">Choose Supplier from this list. When left empty, all suppliers will be updated:</label>
+            <select name="supplier_id" id="supplier_id">
+                <option value="">Update all</option>
+                @foreach($suppliers as $supplier)
+                    <option value="{{ $supplier['id'] }}">{{ $supplier['name'] }}</option>
+                @endforeach
+            </select>
+
             </div>
             <div>
                 <label for="Since">Since:</label>

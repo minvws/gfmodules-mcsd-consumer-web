@@ -7,8 +7,9 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
+use App\Exceptions\BackendConnectionError;
+use Exception;
 
 class MapperController extends Controller
 {
@@ -30,25 +31,26 @@ class MapperController extends Controller
             $response = Http::get($this->mapperUrl, [
                 'supplier_id' => $id,
             ]);
-            $responseData = $response->json();
-            if ($response->status() === 200) {
-                if (!isset($responseData[0])) {
-                    $errors = 'No data found';
-                } else {
-                    $headers = array_keys($responseData[0]);
-                    $rows = array_map(function ($item) {
-                        return array_values($item);
-                    }, $responseData);
-                    $responseData = [
-                        'headers' => $headers,
-                        'rows' => $rows
-                    ];
-                }
-            } else {
-                $errors = 'Error occurred: ' . $response->status() . ' ' . $response->body();
-            }
-        } catch (ConnectionException $e) {
-            $errors = 'error: ' . $e->getMessage();
+        } catch (Exception $e) {
+            throw new BackendConnectionError($e->getMessage());
+        }
+        if ($response->status() !== 200) {
+            throw new BackendConnectionError('Error occurred: ' . $response->status() . ' ' . $response->body());
+        }
+
+        $responseData = $response->json();
+
+        if (!isset($responseData[0])) {
+            $errors = 'No data found';
+        } else {
+            $headers = array_keys($responseData[0]);
+            $rows = array_map(function ($item) {
+                return array_values($item);
+            }, $responseData);
+            $responseData = [
+            'headers' => $headers,
+            'rows' => $rows
+            ];
         }
 
         return view('mapper-overview', [
