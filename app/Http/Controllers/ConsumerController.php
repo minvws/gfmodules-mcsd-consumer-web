@@ -45,18 +45,8 @@ class ConsumerController extends Controller
             $supplierData['resource_id']
         );
 
-        $version = [
-            'consumer' => $this->getResourceVersion($consumerResource),
-            'supplier' => $this->getResourceVersion($supplierResource)
-        ];
-
-        $version['match'] = $version['consumer'] === $version['supplier'];
-
-        $supplierId = $supplierData['supplier_id'];
-
         return view('consumer.resource', ['consumerData' =>
-            $consumerResource['resourceData'], 'supplierData' => $supplierResource['resourceData'],
-            'version' => $version, 'supplierId' => $supplierId]);
+            $consumerResource['resourceData'], 'supplierData' => $supplierResource['resourceData']]);
     }
 
     /**
@@ -117,13 +107,5 @@ class ConsumerController extends Controller
         return ['supplier_url' => $supplier->json()['endpoint'],
             'resource_id' => $mapper->json()[0]['supplier_resource_id'],
             'supplier_id' => $supplierId];
-    }
-
-    /**
-     *  @param array<string, mixed> $resourceData
-    */
-    private function getResourceVersion(array $resourceData): string
-    {
-        return (string) $resourceData['resourceData']["entry"][0]["resource"]['meta']['versionId'];
     }
 }
