@@ -22,7 +22,7 @@ class MapperController extends Controller
 
     public function index(Request $request): View
     {
-        $id = $request->input('id');
+        $id = $request->input('supplier_id');
 
         $errors = null;
         $responseData = null;

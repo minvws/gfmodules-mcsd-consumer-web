@@ -60,6 +60,6 @@ class UpdateController extends Controller
             throw new BackendConnectionError($e->getMessage());
         }
 
-        return redirect()->route('resource.mapper', ['id' => $id])->with('success', 'Updated successfully.');
+        return redirect()->route('resource.mapper', ['supplier_id' => $id])->with('success', 'Updated successfully.');
     }
 }
