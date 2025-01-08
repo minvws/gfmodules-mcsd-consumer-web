@@ -7,10 +7,9 @@
     <div class="collapsing-element">
         <ul>
             <li>
-                <a href="{{ route('index') }}"  aria-current="page" ><span class="icon icon-home">Home-icoon</span>@lang('Landing')</a>
-                <a href="{{ route('suppliers.index') }}"  aria-current="page" ><span class="icon icon-home">Home-icoon</span>@lang('Suppliers')</a>
-                <a href="{{ route('consumer.index') }}"  aria-current="page" ><span class="icon icon-home">Home-icoon</span>@lang('Consumer')</a>
-
+                <a href="{{ route('index') }}"  {!! request()->routeIs('index') ? 'aria-current="page"' : '' !!} ><span class="icon icon-home">Home-icoon</span>@lang('Landing')</a>
+                <a href="{{ route('suppliers.index') }}"  {!! request()->routeIs('suppliers.index') ? 'aria-current="page"' : '' !!} ><span class="icon icon-home">Home-icoon</span>@lang('Suppliers')</a>
+                <a href="{{ route('consumer.index') }}"  {!! request()->routeIs('consumer.index') ? 'aria-current="page"' : '' !!} ><span class="icon icon-home">Home-icoon</span>@lang('Consumer')</a>
             </li>
         </ul>
     </div>
