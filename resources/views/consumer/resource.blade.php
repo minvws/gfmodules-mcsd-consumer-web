@@ -8,8 +8,8 @@
         <pre>{{ json_encode($consumerData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
     </div>
     <div style="flex: 1; border: 1px solid #ccc; padding: 10px;">
-        <h3>Supplier resource data</h3>
-        <pre>{{ json_encode($supplierData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
+        <h3>{{ $supplierData['supplier_name'] }} resource data</h3>
+        <pre>{{ json_encode($supplierData['resourceData'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
     </div>
 </div>
 
