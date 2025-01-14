@@ -44,9 +44,10 @@ class ConsumerController extends Controller
             $resourceType,
             $supplierData['resource_id']
         );
+        $supplierData['resourceData'] = $supplierResource;
 
         return view('consumer.resource', ['consumerData' =>
-            $consumerResource['resourceData'], 'supplierData' => $supplierResource['resourceData']]);
+            $consumerResource, 'supplierData' => $supplierData]);
     }
 
     /**
@@ -62,7 +63,7 @@ class ConsumerController extends Controller
         if ($response->status() !== 200) {
             throw new BackendConnectionError('Error occurred: ' . $response->status() . ' ' . $response->body());
         }
-        return ['resourceData' => $response->json()];
+        return $response->json();
     }
 
     /**
@@ -104,8 +105,11 @@ class ConsumerController extends Controller
         if ($supplier->status() !== 200) {
             throw new BackendConnectionError('Error occurred: ' . $supplier->status() . ' ' . $supplier->body());
         }
-        return ['supplier_url' => $supplier->json()['endpoint'],
+        return [
+            'supplier_url' => $supplier->json()['endpoint'],
+            'supplier_id' => $supplierId,
+            'supplier_name' => $supplier->json()['name'],
             'resource_id' => $mapper->json()[0]['supplier_resource_id'],
-            'supplier_id' => $supplierId];
+        ];
     }
 }
