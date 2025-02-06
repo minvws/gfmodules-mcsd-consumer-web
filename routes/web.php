@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\UpdateController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ManageSuppliersController;
 use App\Http\Controllers\MapperController;
 use App\Http\Controllers\ConsumerController;
 
@@ -24,18 +23,6 @@ Route::get('/', IndexController::class)->name('index');
 Route::get('/update', [UpdateController::class, 'update'])->name('consumer.update');
 
 Route::get('/mapper', [MapperController::class, 'index'])->name('resource.mapper');
-
-Route::get('/suppliers', ManageSuppliersController::class)->name('suppliers.index');
-
-Route::get('/suppliers/create', [ManageSuppliersController::class, 'create'])->name('suppliers.create');
-Route::post('/suppliers', [ManageSuppliersController::class, 'store'])->name('suppliers.store');
-
-Route::get('/suppliers/{id}', [ManageSuppliersController::class, 'show'])->name('suppliers.show');
-
-Route::get('/suppliers/{id}' . '/edit', [ManageSuppliersController::class, 'edit'])->name('suppliers.edit');
-Route::put('/suppliers/{id}', [ManageSuppliersController::class, 'update'])->name('suppliers.update');
-
-Route::get('/suppliers/{id}' . "/delete", [ManageSuppliersController::class, 'destroy'])->name('suppliers.destroy');
 
 Route::get('/consumer', [ConsumerController::class, 'index'])->name('consumer.index');
 Route::get('/consumer-view', [ConsumerController::class, 'getResource'])->name('consumer.getResource');
