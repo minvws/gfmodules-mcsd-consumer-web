@@ -17,7 +17,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        php-versions: [ '8.2', '8.3' ]
+        php-versions: [ '8.2', '8.3', '8.4' ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
@@ -57,7 +57,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        php-versions: [ '8.2', '8.3' ]
+        php-versions: [ '8.2', '8.3', '8.4']
 
   php-linting-psr12:
     needs:
@@ -79,11 +79,11 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        php-versions: [ '8.2', '8.3' ]
+        php-versions: [ '8.2', '8.3', '8.4' ]
 
         # Needs some fixes to be able to run this..
-        ### Error: Child process error (exit code 255): 
-        ### Symfony\Component\ErrorHandler\Error\FatalError 
+        ### Error: Child process error (exit code 255):
+        ### Symfony\Component\ErrorHandler\Error\FatalError
         ### Declaration of Larastan\Larastan\Types\ViewStringType::accepts(PHPStan\Type\Type $type, bool $strictTypes): PHPStan\TrinaryLogic must be compatible with PHPStan\Type\StringType::accepts(PHPStan\Type\Type $type, bool $strictTypes): PHPStan\Type\AcceptsResult
 
   # php-linting-stan:
@@ -129,7 +129,7 @@ jobs:
   #   strategy:
   #     max-parallel: 3
   #     matrix:
-  #       php-versions: [ '8.2', '8.3' ]
+  #       php-versions: [ '8.2', '8.3', '8.4' ]
 
   php-linting-cve:
     needs:
@@ -151,4 +151,4 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        php-versions: [ '8.2', '8.3' ]
+        php-versions: [ '8.2', '8.3', '8.4' ]
