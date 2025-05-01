@@ -1,42 +1,33 @@
-FROM php:8.2-cli
+FROM php:8.2-fpm
 
-ARG APP_USER="app"
-ARG APP_GROUP="app"
-ARG NEW_UID
-ARG NEW_GID
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    libzip-dev \
+    nginx \
+    supervisor \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install zip pdo_mysql mbstring exif pcntl bcmath gd
 
-RUN apt-get update && apt-get install -y wget git unzip wget libzip-dev procps
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY docker/nginx.conf /etc/nginx/sites-available/default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -  && \
-    apt-get install -y nodejs
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN groupadd --system ${APP_GROUP} --gid=${NEW_GID} && \
-    adduser \
-        --disabled-password \
-        --gecos "" \
-        --uid ${NEW_UID} \
-        --gid ${NEW_GID} \
-        ${APP_USER}
+WORKDIR /var/www/html
 
-# Copy entrypoint.sh into the image
-COPY /docker/entrypoint.sh /entrypoint.sh
+COPY . .
 
-WORKDIR /app
+RUN composer install --optimize-autoloader --no-dev && \
+    chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-EXPOSE 8510
+EXPOSE 80
 
-RUN chown -R ${APP_USER}:${APP_GROUP} /usr/local
-
-# Somehow packages in this dir are not owned by the app user
-RUN chown -R ${APP_USER}:${APP_GROUP} /app
-
-# Ensure correct rights and to be executable
-RUN chown ${APP_USER}:${APP_GROUP} /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-USER ${APP_USER}
-
-CMD ["bash", "/entrypoint.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
