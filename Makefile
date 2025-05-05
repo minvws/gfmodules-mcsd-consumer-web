@@ -21,6 +21,8 @@ run: ## Run the project
 	npm run build
 	php artisan serve --host 0.0.0.0 --port=8510
 
+container-build: ## Build the standalone container
+	docker build . -t gfmodules-mcsd-consumer-web --file ./docker/Dockerfile
 
 test: test-php test-js ## Runs tests
 
