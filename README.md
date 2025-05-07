@@ -10,7 +10,7 @@ A web application to efficiently view supplier FHIR resources and manage the cou
 ## Requirements
 
 - <https://github.com/minvws/gfmodules-mcsd-consumer-private> running in a docker container
-- Php 8.2
+- Php 8.3
 - [nodejs](https://nodejs.org/en/download/package-manager)
 
 > **Note:** Nodejs needs a github read package token to install the private packages. This can be done manually or the installation script will guide you through this process as well.
