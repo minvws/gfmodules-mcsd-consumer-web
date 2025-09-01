@@ -7,9 +7,31 @@ A web application to efficiently view supplier FHIR resources and manage the cou
 - Screen to view consumer resources
 - Screen to compare the history of a resource
 
+> [!IMPORTANT]
+> ## Disclaimer
+> 
+> This project and all associated code serve solely as documentation
+> and demonstration purposes to illustrate potential system
+> communication patterns and architectures.
+> 
+> This codebase:
+> 
+> - Is NOT intended for production use
+> - Does NOT represent a final specification
+> - Should NOT be considered feature-complete or secure
+> - May contain errors, omissions, or oversimplified implementations
+> - Has NOT been tested or hardened for real-world scenarios
+> - Is not guaranteed to follow any versioning scheme
+> 
+> The code examples are only meant to help understand concepts and demonstrate possibilities.
+> 
+> By using or referencing this code, you acknowledge that you do so at your own
+> risk and that the authors assume no liability for any consequences of its use.
+
+
 ## Requirements
 
-- <https://github.com/minvws/gfmodules-mcsd-consumer-private> running in a docker container
+- <https://github.com/minvws/gfmodules-mcsd-update-client> running in a docker container
 - Php 8.3
 - [nodejs](https://nodejs.org/en/download/package-manager)
 
@@ -25,8 +47,6 @@ Or start it in a docker container (This is only possible if the .npmrc file has 
 ```bash
 docker compose up --build --remove-orphans
 ```
-
-The frontend is also automatically started when using the [gfmodules-coordination](https://github.com/minvws/gfmodules-coordination-private) setup script.
 
 
 ## Run on docker
